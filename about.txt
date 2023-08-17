@@ -1,0 +1,47 @@
+30 Days of Pandas
+
+Summary
+* Before starting the study plan, you should know basic Python and common data structures like syntax, data types, conditional statements, loops, functions, lists.
+* After finishing the study plan, you'll learn from basic data operations like handling missing values to more intermediate concepts like conducting statistical calculations.
+
+Data Filtering
+1. Big Countries   |   Easy
+2. Recyclable and Low Fat Products |   Easy
+3. Customers Who Never Order   |   Easy
+4. Article Views I |   
+
+String Methods
+5. Invalid Tweets  |   Easy
+6. Calculate Special Bonus |   Easy
+7. Fix Names in a Table    |   Easy
+8. Find Users With Valid E-Mails   |   Easy
+9. Patients With a Condition   |   Easy
+
+Data Manipulation
+10. Nth Highest Salary  |   Medium
+11. Second Highest Salary   |   Medium
+12. Department Highest Salary   |   Medium
+13. Rank Scores |   Medium
+14. Delete Duplicate Emails |   Easy
+15. Rearrange Products Table    |   Easy
+
+Statistics
+16. The Number of Rich Customers    |   Easy
+17. Immediate Food Delivery I   |   Easy
+18. Count Salary Categories |   Medium
+
+Data Aggregation
+19. Find Total Time Spent by Each Employee  |   Easy
+20. Game Play Analysis I    |   Easy
+21. Number of Unique Subjects Taught by Each Teacher    |   Easy
+22. Classes More Than 5 Students    |   Easy
+23. Customer Placing the Largest Number of Orders   |   Easy
+24. Group Sold Products By The Date | Easy
+25. Daily Leads and Partners    |   Easy
+
+Data Integration
+26. Actors and Directors Who Cooperated At Least Three Times    |   Easy
+27. Replace Employee ID With The Unique Identifier  |   Easy
+28. Students and Examinations   |   Easy
+29. Managers with at Least 5 Direct Reports |   Medium
+30. Sales Person    |   Easy

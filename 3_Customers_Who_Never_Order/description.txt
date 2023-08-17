@@ -1,0 +1,244 @@
+183. Customers Who Never Order
+
+SQL Schema
+Create table If Not Exists Customers (id int, name varchar(255))
+Create table If Not Exists Orders (id int, customerId int)
+Truncate table Customers
+insert into Customers (id, name) values ('1', 'Joe')
+insert into Customers (id, name) values ('2', 'Henry')
+insert into Customers (id, name) values ('3', 'Sam')
+insert into Customers (id, name) values ('4', 'Max')
+Truncate table Orders
+insert into Orders (id, customerId) values ('1', '3')
+insert into Orders (id, customerId) values ('2', '1')
+
+Pandas Schema
+Customers = pd.DataFrame([], columns=['id', 'name']).astype({'id':'Int64', 'name':'object'})
+Orders = pd.DataFrame([], columns=['id', 'customerId']).astype({'id':'Int64', 'customerId':'Int64'})
+
+Table: Customers
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
++-------------+---------+
+In SQL, id is the primary key column for this table.
+Each row of this table indicates the ID and name of a customer.
+
+ 
+
+Table: Orders
+
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| customerId  | int  |
++-------------+------+
+In SQL, id is the primary key column for this table.
+customerId is a foreign key (join key in Pandas) of the ID from the Customers table.
+Each row of this table indicates the ID of an order and the ID of the customer who ordered it.
+
+ 
+
+Find all customers who never order anything.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Customers table:
++----+-------+
+| id | name  |
++----+-------+
+| 1  | Joe   |
+| 2  | Henry |
+| 3  | Sam   |
+| 4  | Max   |
++----+-------+
+Orders table:
++----+------------+
+| id | customerId |
++----+------------+
+| 1  | 3          |
+| 2  | 1          |
++----+------------+
+Output: 
++-----------+
+| Customers |
++-----------+
+| Henry     |
+| Max       |
++-----------+
+
+
+Solution
+Approach 1: Filtering Data with Exclusion Criteria
+
+Algorithm
+
+The criterion for determining whether a customer ever orders is: if a customer ID does not appear in the orders table, it means they have never placed an order.
+
+Therefore, we can use row filtering to remove customer IDs that do not meet the criteria.
+
+    In Pandas:
+
+        isin(values) is used to filter and select rows based on whether their values are present in a given set values.
+        ~ represents logical negation.
+
+    Therefore, ~isin(values) selects rows if their values are NOT present in values.
+
+MySQL
+
+select *
+from customers
+where customers.id not in
+(
+    select customerid from orders
+);
+
+Pandas
+
+# Select the rows which `id` is not present in orders['customerId'].
+df = customers[~customers['id'].isin(orders['customerId'])]
+
+We can obtain the following table:
+id	name
+2	Henry
+4	Max
+
+Note that the requirement is to only return the names that meet the criteria, and the column name should be renamed as Customers, therefore.
+
+MySQL
+
+select customers.name as 'Customers'
+from customers
+where customers.id not in
+(
+    select customerid from orders
+);
+
+Pandas
+
+# Build a dataframe that only contains the column `name` 
+# and rename the column `name` as `Customers`.
+df = df[['name']].rename(columns={'name': 'Customers'})
+
+Here is the resulting table:
+Customers
+Henry
+Max
+
+In summary, the complete answer is as follows:
+
+MySQL
+
+select customers.name as 'Customers'
+from customers
+where customers.id not in
+(
+    select customerid from orders
+);
+
+Pandas
+
+import pandas as pd
+
+def find_customers(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    # Select the rows which `id` is not present in orders['customerId'].
+    df = customers[~customers['id'].isin(orders['customerId'])]
+
+    # Build a dataframe that only contains the column `name` 
+    # and rename the column `name` as `Customers`.
+    df = df[['name']].rename(columns={'name': 'Customers'})
+    return df
+
+
+Approach 2: Left Join on customers
+
+The idea is to join the table customers with the table orders based on the common customer ID (the column id in customers and the column customerId in orders).
+
+By performing a left join and selecting the records where the customerId is null, we can identify customers who do not make an order.
+
+    We use a left join on customers because we want to include all customers from it, regardless of whether they place an order or not.
+    Therefore, by using left join, we can preserve all the rows from the left table (customers) and match them with corresponding rows from the right table (orders) based on id and customerID, separately.
+
+MySQL
+
+SELECT * 
+FROM Customers c
+LEFT JOIN Orders o
+ON c.Id = o.CustomerId
+
+Pandas
+
+df = customers.merge(orders, left_on='id', right_on='customerId', how='left')
+
+The table appears as follows:
+id	name	id		customerId
+1	Joe		2		1
+2	Henry	null	null
+3	Sam		1		3
+4	Max		null	null
+
+The next step is filtering the joined table by selecting the rows where the customerId is null, which will give us the customers who do not have any orders.
+
+MySQL
+
+SELECT * 
+FROM Customers
+LEFT JOIN Orders ON Customers.Id = Orders.CustomerId
+WHERE Orders.CustomerId IS NULL
+
+Pandas
+
+df = df[result['customerId'].isna()]
+
+The table appears as follows:
+id	name	id		customerId
+2	Henry	null	null
+4	Max		null	null
+
+Similarly, we only return the names of the rows that meet the criteria, and rename the column name as Customers.
+
+MySQL
+
+SELECT name AS 'Customers'
+FROM Customers
+LEFT JOIN Orders ON Customers.Id = Orders.CustomerId
+WHERE Orders.CustomerId IS NULL
+
+Pandas
+
+df = df[['name']].rename(columns={'name': 'Customers'})
+
+Here is the resulting table:
+Customers
+Henry
+Max
+
+In summary, the complete answer is as follows:
+
+MySQL
+
+SELECT name AS 'Customers'
+FROM Customers
+LEFT JOIN Orders ON Customers.Id = Orders.CustomerId
+WHERE Orders.CustomerId IS NULL
+
+Pandas
+
+import pandas as pd
+
+def customers_who_never_order(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    df = customers.merge(orders, left_on='id', right_on='customerId', how='left')
+    df = df[df['customerId'].isna()]
+    df = df[['name']].rename(columns={'name': 'Customers'})
+    return df
